@@ -1,14 +1,16 @@
-<h1>{{user.name}}</h1>
+<div class="container">
+    <h1>{{user.name}}</h1>
 
-<div>
-    <img ng-src="{{user.picture.url}}">
-</div>
+    <div>
+        <img ng-src="{{user.picture.url}}">
+    </div>
 
-<a ng-href="mailto://{{user.mail}}">{{user.mail}}</a>
+    <a ng-href="mailto://{{user.mail}}">{{user.mail}}</a>
 
-<div>
-    Roles:
-    <ul>
-        <li ng-repeat="role in user.roles">{{role}}</li>
-    </ul>
+    <div>
+        Roles:
+        <ul>
+            <li ng-repeat="role in user.roles">{{role}}</li>
+        </ul>
+    </div>
 </div>

@@ -1,9 +1,11 @@
-<h1>{{node.title}}</h1>
+<div class="container">
+    <h1>{{node.title}}</h1>
 
-<small>Author by <a ng-href="#/user/{{node.uid}}">{{node.name}}</a> on {{node.created}}</small>
+    <small>Author by <a ng-href="#/user/{{node.uid}}">{{node.name}}</a> on {{node.created}}</small>
 
-<div>
-    <img ng-src="{{drupalImageRoot}}{{node.field_image.und[0].filename}}">
+    <div>
+        <img ng-src="{{drupalImageRoot}}{{node.field_image.und[0].filename}}">
+    </div>
+
+    <p>{{node.body.und[0].value}}</p>
 </div>
-
-<p>{{node.body.und[0].value}}</p>
