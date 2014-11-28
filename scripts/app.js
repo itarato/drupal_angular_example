@@ -63,7 +63,7 @@ angular
         };
 
         account.isLoggedIn = function () {
-            return this.token !== null;
+            return this.user !== null && this.user.hasOwnProperty('uid') && this.user.uid > 0;
         };
 
         account.setUpFromLoginResponse = function ( data ) {
@@ -71,6 +71,16 @@ angular
             this.sessid = data.sessid;
             this.session_name = data.session_name;
             this.token = data.token || this.token;
+            if (this.token) {
+                $cookies['XSRF-TOKEN'] = this.token;
+            }
+        };
+
+        account.logOut = function ( ) {
+            this.user = null;
+            this.sessid = null;
+            this.session_name = null;
+            this.token = null;
         };
 
         console.log('Check user login state');
@@ -78,7 +88,6 @@ angular
             console.log('State is verified', data);
             account.token = data.token;
             $cookies['XSRF-TOKEN'] = data.token;
-            $cookies['CSRF-TOKEN'] = data.token;
 
             console.log('Attempt to load logged in user details');
             $http.post(drupalRoot + apiPath + '/system/connect', {})
@@ -89,6 +98,27 @@ angular
         });
 
         return account;
+    })
+
+    .directive('account', function ( ) {
+        return {
+            restrict: 'A',
+            templateUrl: 'views/account.html',
+            controller: 'AccountCtrl'
+        };
+    })
+
+    .controller('AccountCtrl', function ( $scope, Account, $http, drupalRoot, apiPath ) {
+        $scope.account = Account;
+
+        $scope.logOut = function () {
+            console.log('Attempt to logout');
+            $http.post(drupalRoot + apiPath + '/user/logout', { })
+                .success(function ( ) {
+                    console.log('Logout successful');
+                    Account.logOut();
+                });
+        };
     })
 
     .controller('MainCtrl', function ( $scope, Node, $routeParams, Account, $http, drupalRoot, apiPath ) {
