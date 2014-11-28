@@ -1,2 +1,2 @@
-<a ng-if="account.isLoggedIn()" ng-click="logOut()">Log out</a>
+<a ng-if="account.isLoggedIn()" ng-click="logOut()">Log out | {{account.user.name}}</a>
 <a ng-if="!account.isLoggedIn()" ng-href="#/login">Log in</a>

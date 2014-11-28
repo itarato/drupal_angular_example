@@ -4,12 +4,18 @@
 
 'use strict';
 
-var drupalRoot = 'http://localhost/drupal7/';
+// Base path for the backe
+var RESTEndpoint = 'http://localhost/drupal7/api/v1';
 
+/**
+ * Main module definition.
+ */
 angular
 
+    // Module name and dependencies.
     .module('drupalAngularExample', [ 'ngRoute', 'ngResource', 'ngCookies' ])
 
+    // Configuration.
     .config(function ( $routeProvider, $httpProvider ) {
         // Setting up the routes.
         $routeProvider
@@ -42,19 +48,23 @@ angular
         $httpProvider.defaults.xsrfHeaderName = 'X-CSRF-TOKEN';
     })
 
-    .value('drupalRoot', drupalRoot)
-    .value('drupalImageRoot', drupalRoot + 'sites/default/files/field/image/')
-    .value('apiPath', 'api/v1')
+    // Value factories.
+    .value('RESTEndpoint', RESTEndpoint)
+    .value('drupalImageRoot', 'http://localhost/drupal7/sites/default/files/field/image/')
 
-    .factory('Node', function ( $resource, drupalRoot, apiPath ) {
-        return $resource(drupalRoot + apiPath + '/node/:nid');
+    // Resource factories:
+    // Node resource.
+    .factory('Node', function ( $resource, RESTEndpoint ) {
+        return $resource(RESTEndpoint + '/node/:nid');
     })
 
-    .factory('User', function ( $resource, drupalRoot, apiPath ) {
-        return $resource(drupalRoot + apiPath + '/user/:uid');
+    // User resource.
+    .factory('User', function ( $resource, RESTEndpoint ) {
+        return $resource(RESTEndpoint + '/user/:uid');
     })
 
-    .factory('Account', function ( $http, drupalRoot, apiPath, $cookies ) {
+    // Account handler factory.
+    .factory('Account', function ( $http, RESTEndpoint, $cookies ) {
         var account = {
             token: null,
             user: null,
@@ -62,20 +72,31 @@ angular
             session_name: null
         };
 
+        /**
+         * Check if user is authenticated.
+         * @returns {boolean}
+         */
         account.isLoggedIn = function () {
             return this.user !== null && this.user.hasOwnProperty('uid') && this.user.uid > 0;
         };
 
+        /**
+         * Initialize params with the response object from user/login or system/connect.
+         * @param data
+         */
         account.setUpFromLoginResponse = function ( data ) {
-            this.user = data.user;
-            this.sessid = data.sessid;
-            this.session_name = data.session_name;
+            this.user = data.user || this.user;
+            this.sessid = data.sessid || this.sessid;
+            this.session_name = data.session_name || this.session_name;
             this.token = data.token || this.token;
             if (this.token) {
                 $cookies['XSRF-TOKEN'] = this.token;
             }
         };
 
+        /**
+         * Logs user out.
+         */
         account.logOut = function ( ) {
             this.user = null;
             this.sessid = null;
@@ -84,13 +105,12 @@ angular
         };
 
         console.log('Check user login state');
-        $http.post(drupalRoot + apiPath + '/user/token', {}).success(function ( data ) {
+        $http.post(RESTEndpoint + '/user/token', { }).success(function ( data ) {
             console.log('State is verified', data);
-            account.token = data.token;
-            $cookies['XSRF-TOKEN'] = data.token;
-
+            account.setUpFromLoginResponse(data);
+        }).then(function () {
             console.log('Attempt to load logged in user details');
-            $http.post(drupalRoot + apiPath + '/system/connect', {})
+            $http.post(RESTEndpoint + '/system/connect', { })
                 .success(function ( data ) {
                     console.log('User details arrived', data);
                     account.setUpFromLoginResponse(data);
@@ -100,6 +120,7 @@ angular
         return account;
     })
 
+    // Account directive.
     .directive('account', function ( ) {
         return {
             restrict: 'A',
@@ -108,12 +129,14 @@ angular
         };
     })
 
-    .controller('AccountCtrl', function ( $scope, Account, $http, drupalRoot, apiPath ) {
+    // Controllers:
+    // Account directive controller.
+    .controller('AccountCtrl', function ( $scope, Account, $http, RESTEndpoint ) {
         $scope.account = Account;
 
         $scope.logOut = function () {
             console.log('Attempt to logout');
-            $http.post(drupalRoot + apiPath + '/user/logout', { })
+            $http.post(RESTEndpoint + '/user/logout', { })
                 .success(function ( ) {
                     console.log('Logout successful');
                     Account.logOut();
@@ -121,7 +144,8 @@ angular
         };
     })
 
-    .controller('MainCtrl', function ( $scope, Node, $routeParams, Account, $http, drupalRoot, apiPath ) {
+    // Main page controller.
+    .controller('MainCtrl', function ( $scope, Node, $routeParams, Account, $http, RESTEndpoint ) {
         $scope.page = parseInt($routeParams.page || 0);
         $scope.account = Account;
 
@@ -133,7 +157,7 @@ angular
         $scope.deleteNode = function ( nid ) {
             console.log('Attempt delete node', nid);
 
-            $http.delete(drupalRoot + apiPath + '/node/' + nid)
+            $http.delete(RESTEndpoint + '/node/' + nid)
                 .success(function ( ) {
                     console.log('Delete successful');
                     $scope.updateNodeList();
@@ -141,11 +165,13 @@ angular
         };
     })
 
+    // Node item controller.
     .controller('NodeCtrl', function ( $scope, $routeParams, Node, drupalImageRoot ) {
         $scope.drupalImageRoot = drupalImageRoot;
         $scope.node = Node.get({nid: $routeParams.nid});
     })
 
+    // Node add form controller.
     .controller('NodeAddCtrl', function ( $scope, Node, Account, $location ) {
         $scope.account = Account;
 
@@ -163,17 +189,19 @@ angular
         };
     })
 
+    // User item controller.
     .controller('UserCtrl', function ( $scope, $routeParams, User ) {
         $scope.user = User.get({uid: $routeParams.uid});
     })
 
-    .controller('LoginCtrl', function ( $scope, $http, Account, drupalRoot, apiPath ) {
+    // Login action controller.
+    .controller('LoginCtrl', function ( $scope, $http, Account, RESTEndpoint ) {
         $scope.login = function ( ) {
             console.log('User login attempt');
-            $http.post(drupalRoot + apiPath + '/user/login', {
+            $http.post(RESTEndpoint + '/user/login', {
                 username: $scope.username,
                 password: $scope.password
-            }).success(function ( data, status, headers, config ) {
+            }).success(function ( data ) {
                 console.log('User login - success', data);
                 Account.setUpFromLoginResponse(data);
             });
