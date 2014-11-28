@@ -91,16 +91,23 @@ angular
         return account;
     })
 
-    .controller('MainCtrl', function ( $scope, Node, $routeParams, Account ) {
+    .controller('MainCtrl', function ( $scope, Node, $routeParams, Account, $http, drupalRoot, apiPath ) {
         $scope.page = parseInt($routeParams.page || 0);
         $scope.account = Account;
-        $scope.nodes = Node.query({pagesize: 10, page: $scope.page});
+
+        $scope.updateNodeList = function ( ) {
+            $scope.nodes = Node.query({pagesize: 10, page: $scope.page});
+        };
+        $scope.updateNodeList();
 
         $scope.deleteNode = function ( nid ) {
             console.log('Attempt delete node', nid);
-            Node.delete({nid: nid}, function ( ) {
-                console.log('Delete successful');
-            });
+
+            $http.delete(drupalRoot + apiPath + '/node/' + nid)
+                .success(function ( ) {
+                    console.log('Delete successful');
+                    $scope.updateNodeList();
+                });
         };
     })
 
@@ -109,7 +116,7 @@ angular
         $scope.node = Node.get({nid: $routeParams.nid});
     })
 
-    .controller('NodeAddCtrl', function ( $scope, Node, $http, drupalRoot, apiPath, Account, $location ) {
+    .controller('NodeAddCtrl', function ( $scope, Node, Account, $location ) {
         $scope.account = Account;
 
         $scope.add = function () {

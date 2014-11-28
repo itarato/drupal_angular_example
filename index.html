@@ -1,22 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-  <meta charset="UTF-8">
-  <title>Drupal - AngularJS Example</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+
+    <title>Drupal - AngularJS Example</title>
 </head>
-<body ng-app="drupalAngularExample">
+<body ng-app="drupalAngularExample" role="document">
 
-<a ng-href="#/">Home</a> |
-<a ng-href="#/node/add">Create content</a> |
-<a ng-href="#/login">Login</a>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li><a ng-href="#/">Home</a></li>
+            <li><a ng-href="#/node/add">Create content</a></li>
+            <li><a ng-href="#/login">Login</a></li>
+        </ul>
+    </div>
+</nav>
 
-<hr>
+<br>
+<br>
+<br>
+<br>
 
-<div ng-view=""></div>
+<div class="container" role="main">
 
-<hr>
+    <div ng-view=""></div>
 
-<small>Drupal - AngularJS | headless example</small>
+    <hr>
+
+    <small>Drupal - AngularJS | headless example</small>
+
+</div>
 
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.4/angular.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.4/angular-route.js"></script>

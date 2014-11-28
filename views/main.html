@@ -1,10 +1,21 @@
-<div>
-    <div ng-repeat="node in nodes">
-        <a ng-href="#/node/{{node.nid}}">{{node.title}}</a>
-        <span ng-if="account.isLoggedIn()">
-             | <a ng-click="deleteNode(node.nid)">[ delete ]</a>
-        </span>
-    </div>
+
+<div class="container">
+    <h1>Content list</h1>
+
+    <table class="table table-hover">
+        <tbody>
+            <tr ng-repeat="node in nodes">
+                <td>
+                    <a ng-href="#/node/{{node.nid}}">{{node.title}}</a>
+                </td>
+                <td>
+                    <span ng-if="account.isLoggedIn()">
+                        <a ng-click="deleteNode(node.nid)" class="btn btn-default btn-xs btn-danger">delete</a>
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
     <hr>
 

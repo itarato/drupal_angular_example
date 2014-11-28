@@ -1,9 +1,15 @@
-<form ng-submit="login()">
-    <label>Username: </label>
-    <input ng-model="username">
+<form ng-submit="login()" role="form" class="form-inline">
+    <div class="form-group">
+        <label>Username: </label>
+        <input ng-model="username" class="form-control">
+    </div>
 
-    <label>Password: </label>
-    <input type="password" ng-model="password">
+    <div class="form-group">
+        <label>Password: </label>
+        <input type="password" ng-model="password" class="form-control">
+    </div>
 
-    <input type="submit">
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary">
+    </div>
 </form>
