@@ -1,0 +1,16 @@
+<div>
+    <div ng-repeat="node in nodes">
+        <a ng-href="#/node/{{node.nid}}">{{node.title}}</a>
+        <span ng-if="account.isLoggedIn()">
+             | <a ng-click="deleteNode(node.nid)">[ delete ]</a>
+        </span>
+    </div>
+
+    <hr>
+
+    <div>
+        <a ng-href="#/node/list/{{page - 1}}">&lt; back</a> |
+        page {{page}} |
+        <a ng-href="#/node/list/{{page + 1}}">next &gt;</a>
+    </div>
+</div>

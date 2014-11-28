@@ -1,0 +1,17 @@
+<div ng-if="account.isLoggedIn()">
+    <form ng-submit="add()">
+        <div>
+            <label>Title:</label>
+            <input ng-model="title">
+        </div>
+
+        <div>
+            <label>Body:</label>
+            <textarea ng-model="body"></textarea>
+        </div>
+
+        <div>
+            <input type="submit">
+        </div>
+    </form>
+</div>
