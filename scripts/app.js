@@ -5,7 +5,7 @@
 'use strict';
 
 // Base path for the backe
-var RESTEndpoint = 'http://localhost/drupal7/api/v1';
+var REST_URL = 'http://localhost/drupal7/api/v1';
 
 /**
  * Main module definition.
@@ -49,22 +49,22 @@ angular
     })
 
     // Value factories.
-    .value('RESTEndpoint', RESTEndpoint)
+    .value('REST_URL', REST_URL)
     .value('drupalImageRoot', 'http://localhost/drupal7/sites/default/files/field/image/')
 
     // Resource factories:
     // Node resource.
-    .factory('Node', function ( $resource, RESTEndpoint ) {
-        return $resource(RESTEndpoint + '/node/:nid');
+    .factory('Node', function ( $resource, REST_URL ) {
+        return $resource(REST_URL + '/node/:nid');
     })
 
     // User resource.
-    .factory('User', function ( $resource, RESTEndpoint ) {
-        return $resource(RESTEndpoint + '/user/:uid');
+    .factory('User', function ( $resource, REST_URL ) {
+        return $resource(REST_URL + '/user/:uid');
     })
 
     // Account handler factory.
-    .factory('Account', function ( $http, RESTEndpoint, $cookies ) {
+    .factory('Account', function ( $http, REST_URL, $cookies ) {
         var account = {
             token: null,
             user: null,
@@ -105,12 +105,12 @@ angular
         };
 
         console.log('Check user login state');
-        $http.post(RESTEndpoint + '/user/token', { }).success(function ( data ) {
+        $http.post(REST_URL + '/user/token', { }).success(function ( data ) {
             console.log('State is verified', data);
             account.setUpFromLoginResponse(data);
         }).then(function () {
             console.log('Attempt to load logged in user details');
-            $http.post(RESTEndpoint + '/system/connect', { })
+            $http.post(REST_URL + '/system/connect', { })
                 .success(function ( data ) {
                     console.log('User details arrived', data);
                     account.setUpFromLoginResponse(data);
@@ -131,12 +131,12 @@ angular
 
     // Controllers:
     // Account directive controller.
-    .controller('AccountCtrl', function ( $scope, Account, $http, RESTEndpoint ) {
+    .controller('AccountCtrl', function ( $scope, Account, $http, REST_URL ) {
         $scope.account = Account;
 
         $scope.logOut = function () {
             console.log('Attempt to logout');
-            $http.post(RESTEndpoint + '/user/logout', { })
+            $http.post(REST_URL + '/user/logout', { })
                 .success(function ( ) {
                     console.log('Logout successful');
                     Account.logOut();
@@ -145,7 +145,7 @@ angular
     })
 
     // Main page controller.
-    .controller('MainCtrl', function ( $scope, Node, $routeParams, Account, $http, RESTEndpoint ) {
+    .controller('MainCtrl', function ( $scope, Node, $routeParams, Account, $http, REST_URL ) {
         $scope.page = parseInt($routeParams.page || 0);
         $scope.account = Account;
 
@@ -157,7 +157,7 @@ angular
         $scope.deleteNode = function ( nid ) {
             console.log('Attempt delete node', nid);
 
-            $http.delete(RESTEndpoint + '/node/' + nid)
+            $http.delete(REST_URL + '/node/' + nid)
                 .success(function ( ) {
                     console.log('Delete successful');
                     $scope.updateNodeList();
@@ -195,10 +195,10 @@ angular
     })
 
     // Login action controller.
-    .controller('LoginCtrl', function ( $scope, $http, Account, RESTEndpoint ) {
+    .controller('LoginCtrl', function ( $scope, $http, Account, REST_URL ) {
         $scope.login = function ( ) {
             console.log('User login attempt');
-            $http.post(RESTEndpoint + '/user/login', {
+            $http.post(REST_URL + '/user/login', {
                 username: $scope.username,
                 password: $scope.password
             }).success(function ( data ) {
