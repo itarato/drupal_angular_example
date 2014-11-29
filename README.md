@@ -59,7 +59,7 @@ Learn more: https://docs.angularjs.org/guide/module
 
 Configuration is called at the initialization phase once, here we set up the router and be able to alter some default configuration:
 
-```javassript
+```javascript
 // Configuration.
     .config(function ( $routeProvider, $httpProvider ) {
         // Setting up the routes.
